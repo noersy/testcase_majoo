@@ -29,27 +29,46 @@ class AuthBlocCubit extends Cubit<AuthBlocState> {
     }
   }
 
-  void goToRegister(){
+  void goToRegister() {
     emit(AuthBlocRegisterState());
   }
-  void goToLogin(){
+
+  void goToLogin() {
     emit(AuthBlocLoginState());
   }
 
-  void register(String _email, String _password, String _username) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    final user = await DBLite.i.insert(User(email: _email, password: _password, userName: _username));
+  void register(String _email, String _password, String _username, {bool valid}) async {
 
+    if (_email == null || _password == null) {
+      await _showAlert(title: "Login Gagal", content: "Form tidak boleh kosong, mohon cek kembali data yang anda inputkan", isError: true);
+      return;
+    }
+
+    if(!valid){
+      await _showAlert(title: "Login Gagal", content: "Masukkan e-mail yang valid", isError: true);
+      return;
+    }
+
+    final user = await DBLite.i.insert(User(email: _email, password: _password, userName: _username));
     if (user != null) {
+      final data = user.toJson().toString();
+
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      sharedPreferences.setString("user_value", data);
+
       await sharedPreferences.setBool("is_logged_in", true);
-      String data = user.toJson().toString();
+      await _showAlert(title: "Register Berhasil", content: "", isError: false);
+
       sharedPreferences.setString("user_value", data);
       emit(AuthBlocLoggedInState());
+    } else {
+      await _showAlert(title: "Register Gagal", content: "", isError: true);
+      emit(AuthBlocLoginState());
     }
   }
 
   void loginUser(String _email, String _password) async {
-    if(_email == null|| _password == null){
+    if (_email == null || _password == null) {
       await _showAlert(title: "Login Gagal", content: "Form tidak boleh kosong, mohon cek kembali data yang anda inputkan", isError: true);
       return;
     }
@@ -65,7 +84,7 @@ class AuthBlocCubit extends Cubit<AuthBlocState> {
       await _showAlert(title: "Login Berhasil", content: "", isError: false);
 
       emit(AuthBlocLoggedInState());
-    }else{
+    } else {
       await _showAlert(title: "Login Gagal", content: "Periksa kembali inputan anda", isError: true);
       emit(AuthBlocLoginState());
     }
@@ -80,7 +99,7 @@ class AuthBlocCubit extends Cubit<AuthBlocState> {
     emit(AuthBlocLoginState());
   }
 
-  Future<void> _showAlert({String title, String content,  bool isError}) async {
+  Future<void> _showAlert({String title, String content, bool isError}) async {
     return await showDialog(
       context: navigatorKey.currentContext,
       builder: (_) => CostumeAlertDialog(content: content, title: title, isError: isError),

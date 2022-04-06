@@ -52,6 +52,7 @@ class _HomeBlocScreenState extends State<HomeBlocScreen> {
                 body: Center(child: Lottie.asset('asserts/lottie/loading.json')),
               );
             } else if (state is HomeBlocErrorState) {
+              print(state);
               return ErrorScreen(message: state.error);
             } else if (state is HomeBlocOfflineState) {
               return HomeBlocOfflineScreen();

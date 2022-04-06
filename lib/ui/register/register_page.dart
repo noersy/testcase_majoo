@@ -126,9 +126,7 @@ class _LoginState extends State<RegisterPage> {
     final _email = _emailController.value;
     final _password = _passwordController.value;
     final _username = _userNameController.value;
-
-    if (formKey.currentState?.validate() == true && _email != null && _password != null) {
-      BlocProvider.of<AuthBlocCubit>(context).register(_email, _password, _username);
-    }
+    final valid = formKey.currentState?.validate();
+    BlocProvider.of<AuthBlocCubit>(context).register(_email, _password, _username, valid: valid);
   }
 }

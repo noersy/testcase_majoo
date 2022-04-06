@@ -156,7 +156,7 @@ class DetailMoviePage extends StatelessWidget {
                 final _data = snapshot.data;
                 if (_data != null) {
                   return GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 4 / 5),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 4 / 6),
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: _data.results.length,
