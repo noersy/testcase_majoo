@@ -15,7 +15,7 @@ class DBLite {
   static Database _db;
 
   void initialize() async {
-    _db = await openDatabase(SqlLite.path, version: 1, onCreate: (Database db, int version) async {
+    _db = await openDatabase(SqlLite.path, version: 2, onCreate: (Database db, int version) async {
       await db.execute('''
       create table ${User.tableUser} ( 
       ${User.columnId} integer primary key autoincrement, 
@@ -27,8 +27,9 @@ class DBLite {
 
     if (_db != null) {
       await _db.insert(User.tableUser, {
-        '${User.columnPassword}': "123456",
+        '${User.columnUsername}': "Majoo",
         '${User.columnEmail}': "majoo@gmail.com",
+        '${User.columnPassword}': "123456",
       });
     }
   }

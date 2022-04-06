@@ -16,7 +16,7 @@ class HomeBlocOfflineScreen extends StatelessWidget {
         children: [
           Lottie.asset("asserts/lottie/lost_connection.json"),
           SizedBox(height: SpDims.sp12),
-          Text("You is offline"),
+          Text("Your phone is offline"),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: SpDims.sp22, vertical: SpDims.sp12),
             child: CostumButton(

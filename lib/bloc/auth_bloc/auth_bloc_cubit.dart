@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -51,7 +52,7 @@ class AuthBlocCubit extends Cubit<AuthBlocState> {
 
     final user = await DBLite.i.insert(User(email: _email, password: _password, userName: _username));
     if (user != null) {
-      final data = user.toJson().toString();
+      String data = jsonEncode(user.toJson());
 
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       sharedPreferences.setString("user_value", data);
@@ -78,7 +79,7 @@ class AuthBlocCubit extends Cubit<AuthBlocState> {
 
     if (user != null) {
       await sharedPreferences.setBool("is_logged_in", true);
-      String data = user.toJson().toString();
+      String data = jsonEncode(user.toJson());
       sharedPreferences.setString("user_value", data);
 
       await _showAlert(title: "Login Berhasil", content: "", isError: false);

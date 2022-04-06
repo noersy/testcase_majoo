@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -16,7 +17,10 @@ class CAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: Icon(Icons.search),
-          onPressed: () {},
+          onPressed: () {
+            Fluttertoast.cancel();
+            Fluttertoast.showToast(msg: "Action not set");
+          },
         ),
       ],
       title: Text(title),

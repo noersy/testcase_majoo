@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:majootestcase/ui/home_bloc/home_bloc_offilne_screen.dart';
 import 'package:majootestcase/utils/connection.dart';
@@ -20,7 +21,6 @@ class HomeBlocScreen extends StatefulWidget {
 }
 
 class _HomeBlocScreenState extends State<HomeBlocScreen> {
-
   StreamController connectionChangeController = StreamController.broadcast();
 
   @override
@@ -38,31 +38,31 @@ class _HomeBlocScreenState extends State<HomeBlocScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeBlocCubit, HomeBlocState>(builder: (context, state) {
-      return StreamBuilder(
-          stream: Connection.i.connectionChange,
-          builder: (context, snapshot) {
-
-            if (state is HomeBlocLoadedState) {
-              return HomeBlocLoadedScreen(data: state.data);
-            } else if (state is HomeBlocLoadingState) {
-              return LoadingIndicator();
-            } else if (state is HomeBlocInitialState) {
-              return Scaffold(
-                body: Center(child: Lottie.asset('asserts/lottie/loading.json')),
-              );
-            } else if (state is HomeBlocErrorState) {
-              print(state);
-              return ErrorScreen(message: state.error);
-            } else if (state is HomeBlocOfflineState) {
-              return HomeBlocOfflineScreen();
-            }
-            return Center(child: Text(kDebugMode ? "state not implemented $state" : ""));
-          });
-    });
+    return Scaffold(
+      body: BlocBuilder<HomeBlocCubit, HomeBlocState>(builder: (context, state) {
+        if (state is HomeBlocLoadedState) {
+          return HomeBlocLoadedScreen(data: state.data);
+        } else if (state is HomeBlocLoadingState) {
+          return LoadingIndicator();
+        } else if (state is HomeBlocInitialState) {
+          return Center(child: Lottie.asset('asserts/lottie/loading.json'));
+        } else if (state is HomeBlocErrorState) {
+          print(state);
+          return ErrorScreen(message: state.error);
+        } else if (state is HomeBlocOfflineState) {
+          return HomeBlocOfflineScreen();
+        }
+        return Center(child: Text(kDebugMode ? "state not implemented $state" : ""));
+      }),
+    );
   }
 
-  checkConnection(event){
-    BlocProvider.of<HomeBlocCubit>(context).fetchingData();
+  checkConnection( event) {
+    if(event == false) {
+      Fluttertoast.showToast(
+        toastLength: Toast.LENGTH_SHORT,
+        msg: "Internet not coneection",
+      );
+    }
   }
 }

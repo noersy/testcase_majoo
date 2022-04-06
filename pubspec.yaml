@@ -41,6 +41,7 @@ dependencies:
   carousel_slider:
   connectivity:
   lottie:
+  fluttertoast:
 dev_dependencies:
   flutter_test:
     sdk: flutter

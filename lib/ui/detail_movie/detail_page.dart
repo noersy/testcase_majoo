@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:majootestcase/common/widget/image_network.dart';
 import 'package:majootestcase/models/trandings.dart';
 import 'package:majootestcase/services/api_service.dart';
@@ -48,7 +49,12 @@ class DetailMoviePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SafeArea(child: const Icon(Icons.play_arrow_outlined, size: 55.0, color: Colors.yellow))
+                GestureDetector(
+                  onTap: () {
+                    Fluttertoast.showToast(msg: "Action not set");
+                  },
+                  child: SafeArea(child: const Icon(Icons.play_arrow_outlined, size: 55.0, color: Colors.yellow)),
+                )
               ],
             ),
             Container(
@@ -112,14 +118,18 @@ class DetailMoviePage extends StatelessWidget {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Fluttertoast.showToast(msg: "Action not set");
+                        },
                         icon: Icon(
                           Icons.add,
                           color: Colors.white,
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Fluttertoast.showToast(msg: "Action not set");
+                        },
                         icon: Icon(
                           Icons.share,
                           color: Colors.white,
@@ -150,13 +160,25 @@ class DetailMoviePage extends StatelessWidget {
                 style: Theme.of(context).textTheme.title.copyWith(color: Colors.white),
               ),
             ),
+            SizedBox(height: SpDims.sp12),
             FutureBuilder<Movie>(
               future: apiServices.getMovieRecommendations(data.id),
               builder: (BuildContext context, AsyncSnapshot<Movie> snapshot) {
                 final _data = snapshot.data;
-                if (_data != null) {
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SizedBox(
+                    child: spinKit,
+                  );
+                }
+
+                if (_data.results?.isNotEmpty ?? false) {
                   return GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 4 / 6),
+                    padding: EdgeInsets.zero,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 3 / 4,
+                    ),
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: _data.results.length,
@@ -175,10 +197,16 @@ class DetailMoviePage extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               SizedBox(
                                 height: 200,
+                                width: double.infinity,
                                 child: Card(
+                                  color: Theme.of(context).primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(7.0)
+                                  ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(7.0),
                                     child: CImage.network(Api.imagePath + data[index].posterPath, fit: BoxFit.cover),
@@ -204,7 +232,15 @@ class DetailMoviePage extends StatelessWidget {
                     },
                   );
                 } else {
-                  return SizedBox.shrink();
+                  return Container(
+                    height: 60,
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(bottom: SpDims.sp8),
+                    child: Text(
+                      "none",
+                      style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white.withOpacity(0.5)),
+                    ),
+                  );
                 }
               },
             )

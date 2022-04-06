@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,9 +8,11 @@ import 'package:majootestcase/common/widget/app_bar.dart';
 import 'package:majootestcase/common/widget/custom_button.dart';
 import 'package:majootestcase/common/widget/image_network.dart';
 import 'package:majootestcase/models/trandings.dart';
+import 'package:majootestcase/models/user.dart';
 import 'package:majootestcase/themes/spacing.dart';
 import 'package:majootestcase/ui/detail_movie/detail_page.dart';
 import 'package:majootestcase/utils/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeBlocLoadedScreen extends StatefulWidget {
   final List<Movie> data;
@@ -35,23 +39,7 @@ class _HomeBlocLoadedScreenState extends State<HomeBlocLoadedScreen> {
           _scaffoldKey.currentState.openDrawer();
         },
       ),
-      drawer: Drawer(
-        semanticLabel: "Menu",
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CostumButton(
-                text: 'Logout',
-                onPressed: () {
-                  BlocProvider.of<AuthBlocCubit>(context).logout();
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+      drawer: SideDrawer(),
       body: PageView(
         physics: NeverScrollableScrollPhysics(),
         controller: controller,
@@ -130,6 +118,70 @@ class _HomeBlocLoadedScreenState extends State<HomeBlocLoadedScreen> {
   }
 }
 
+class SideDrawer extends StatefulWidget {
+  const SideDrawer({Key key}) : super(key: key);
+
+  @override
+  _SideDrawerState createState() => _SideDrawerState();
+}
+
+class _SideDrawerState extends State<SideDrawer> {
+  SharedPreferences sharedPreferences;
+  User _user;
+
+  getPref() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    _user = User.fromJson(jsonDecode(sharedPreferences.getString('user_value')));
+    print(_user.toJson());
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getPref();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Drawer(
+        semanticLabel: "Menu",
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  SizedBox(height: SpDims.sp20),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                      radius: 60,
+                      child: Icon(Icons.person,size: 70),
+                    ),
+                  ),
+                  Text(_user?.userName ?? 'none', style: Theme.of(context).textTheme.title),
+                  Text(_user?.email ?? 'none', style: Theme.of(context).textTheme.subtitle1),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CostumButton(
+                text: 'Logout',
+                onPressed: () {
+                  BlocProvider.of<AuthBlocCubit>(context).logout();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _MovieList extends StatelessWidget {
   final List<Result> data;
 
@@ -159,6 +211,7 @@ class _MovieList extends StatelessWidget {
               children: [
                 SizedBox(
                   height: 200,
+                  width: double.infinity,
                   child: Card(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(7.0),
@@ -214,6 +267,7 @@ class _UpcomingList extends StatelessWidget {
               children: [
                 SizedBox(
                   height: 200,
+                  width: 120.0,
                   child: Card(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(7.0),
