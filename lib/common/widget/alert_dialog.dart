@@ -32,12 +32,10 @@ class CostumeAlertDialog extends StatelessWidget {
             maxHeight: 300,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: SpDims.sp46, vertical: SpDims.sp12),
-              child: Expanded(
-                child: Text(
-                  content,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
+              child: Text(
+                content,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyText2,
               ),
             ),
           ) : SizedBox.shrink(),
