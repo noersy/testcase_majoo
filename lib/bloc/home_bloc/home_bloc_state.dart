@@ -15,7 +15,7 @@ class HomeBlocLoadingState extends HomeBlocState { }
 class HomeBlocOfflineState extends HomeBlocState { }
 
 class HomeBlocLoadedState extends HomeBlocState {
-    final Trending data;
+    final List<Movie> data;
     HomeBlocLoadedState(this.data);
 
     @override

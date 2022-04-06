@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:majootestcase/bloc/home_bloc/home_bloc_cubit.dart';
 import 'package:majootestcase/common/widget/custom_button.dart';
 import 'package:majootestcase/themes/spacing.dart';
@@ -13,10 +14,12 @@ class HomeBlocOfflineScreen extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Lottie.asset("asserts/lottie/lost_connection.json"),
+          SizedBox(height: SpDims.sp12),
           Text("You is offline"),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: SpDims.sp22, vertical: SpDims.sp12),
-            child: CustomButton(
+            child: CostumButton(
               text: "Refresh",
               onPressed: (){
                 BlocProvider.of<HomeBlocCubit>(context).fetchingData();

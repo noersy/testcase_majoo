@@ -2,6 +2,9 @@ import 'dart:io'; //InternetAddress utility
 import 'dart:async'; //For StreamController/Stream
 
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:majootestcase/bloc/home_bloc/home_bloc_cubit.dart';
+import 'package:majootestcase/main.dart';
 
 class Connection {
   static final Connection _singleton = Connection._internal();

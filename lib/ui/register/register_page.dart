@@ -34,44 +34,45 @@ class _LoginState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(top: 75, left: 25, bottom: 25, right: 25),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Hallo',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  // color: colorBlue,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(top: 75, left: 25, bottom: 25, right: 25),
+            child: Column(
+              children: <Widget>[
+                Text(
+                  'Hallo',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    // color: colorBlue,
+                  ),
                 ),
-              ),
-              Text(
-                'Silahkan register',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
+                Text(
+                  'Silahkan register',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
-              SizedBox(height: 9),
-              _form(),
-              SizedBox(height: 50),
-              CustomButton(
-                text: 'Register',
-                onPressed: _handleRegister,
-                height: 100,
-              ),
-              SizedBox(height: 9),
-              CustomButton(
-                text: 'Back',
-                isSecondary: true,
-                onPressed:(){},
-                height: 100,
-              ),
-            ],
+                SizedBox(height: 9),
+                _form(),
+                SizedBox(height: 50),
+                CostumButton(
+                  text: 'Register',
+                  onPressed: _handleRegister,
+                  height: 100,
+                ),
+                SizedBox(height: 9),
+                CostumButton(
+                  text: 'Back',
+                  isSecondary: true,
+                  onPressed: () => BlocProvider.of<AuthBlocCubit>(context).goToLogin(),
+                  height: 100,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -127,36 +128,7 @@ class _LoginState extends State<RegisterPage> {
     final _username = _userNameController.value;
 
     if (formKey.currentState?.validate() == true && _email != null && _password != null) {
-      final user = await DBLite.i.insert(User(email: _email, password: _password, userName: _username));
-
-      if (user != null) {
-        _showSnackBar("Register berhasil");
-        AuthBlocCubit authBlocCubit = AuthBlocCubit();
-        authBlocCubit.loginUser(user);
-        await Future.delayed(Duration(seconds: 2));
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (context) => HomeBlocCubit()..fetchingData(),
-              child: HomeBlocScreen(),
-            ),
-          ),
-        );
-      }
+      BlocProvider.of<AuthBlocCubit>(context).register(_email, _password, _username);
     }
-    _showSnackBar("Register gagal");
-  }
-
-  void _showSnackBar(String msg) {
-    scaffoldKey.currentState.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Text(
-          msg ?? "",
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
   }
 }

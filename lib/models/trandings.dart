@@ -5,12 +5,12 @@
 import 'package:meta/meta.dart';
 import 'dart:convert';
 
-Trending trendingFromMap(String str) => Trending.fromMap(json.decode(str));
+Movie trendingFromMap(String str) => Movie.fromMap(json.decode(str));
 
-String trendingToMap(Trending data) => json.encode(data.toMap());
+String trendingToMap(Movie data) => json.encode(data.toMap());
 
-class Trending {
-  Trending({
+class Movie {
+  Movie({
     @required this.page,
     @required this.results,
     @required this.totalPages,
@@ -22,7 +22,7 @@ class Trending {
   final int totalPages;
   final int totalResults;
 
-  factory Trending.fromMap(Map<String, dynamic> json) => Trending(
+  factory Movie.fromMap(Map<String, dynamic> json) => Movie(
     page: json["page"],
     results: List<Result>.from(json["results"].map((x) => Result.fromMap(x))),
     totalPages: json["total_pages"],

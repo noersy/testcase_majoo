@@ -13,6 +13,8 @@ class AuthBlocLoadingState extends AuthBlocState { }
 
 class AuthBlocLoggedInState extends AuthBlocState { }
 
+class AuthBlocRegisterState extends AuthBlocState { }
+
 class AuthBlocLoginState extends AuthBlocState { }
 
 class AuthBlocSuccesState extends AuthBlocState { }

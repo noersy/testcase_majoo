@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomButton extends StatelessWidget {
+class CostumButton extends StatelessWidget {
   final String text;
   final double height;
   final VoidCallback onPressed;
@@ -9,12 +9,18 @@ class CustomButton extends StatelessWidget {
   final bool isSecondary;
   final bool isOutline;
 
-  const CustomButton(
-      {Key key, this.text, this.height = 40, this.onPressed, this.leadingIcon, this.shapeBorder, this.isSecondary = false})
-      : isOutline = false,
+  const CostumButton({
+    Key key,
+    @required this.text,
+    this.height = 40,
+    this.onPressed,
+    this.leadingIcon,
+    this.shapeBorder,
+    this.isSecondary = false,
+  })  : isOutline = false,
         super(key: key);
 
-  const CustomButton.outline(
+  const CostumButton.outline(
       {Key key, this.text, this.height = 40, this.onPressed, this.leadingIcon, this.shapeBorder, this.isSecondary = false})
       : isOutline = true,
         super(key: key);
@@ -45,19 +51,13 @@ class CustomButton extends StatelessWidget {
   }
 
   Color _color(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
-    final color = isSecondary ? Colors.grey : primaryColor;
-    return isSecondary
-        ? primaryColor
-        : color.computeLuminance() > 0.5
-            ? Colors.grey
-            : Colors.white;
+    return Theme.of(context).buttonColor;
   }
 
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
-    final color = isSecondary ? Colors.grey : primaryColor;
+    final color = isSecondary ? Theme.of(context).unselectedWidgetColor : primaryColor;
     return ButtonTheme(
       height: height,
       buttonColor: color,

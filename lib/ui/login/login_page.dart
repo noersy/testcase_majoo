@@ -33,26 +33,12 @@ class _LoginState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      body: BlocListener<AuthBlocCubit, AuthBlocState>(
-        listener: (context, state) {
-          if (state is AuthBlocLoggedInState) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BlocProvider(
-                  create: (context) => HomeBlocCubit()..fetchingData(),
-                  child: HomeBlocScreen(),
-                ),
-              ),
-            );
-          }
-        },
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(top: 75, left: 25, bottom: 25, right: 25),
+      body: Padding(
+        padding: EdgeInsets.only(top: 75, left: 25, bottom: 25, right: 25),
+        child: Center(
+          child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
                   'Selamat Datang',
@@ -76,7 +62,7 @@ class _LoginState extends State<LoginPage> {
                 SizedBox(
                   height: 50,
                 ),
-                CustomButton(
+                CostumButton(
                   text: 'Login',
                   onPressed: _handleLogin,
                   height: 100,
@@ -97,6 +83,7 @@ class _LoginState extends State<LoginPage> {
     return Form(
       key: formKey,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           CustomTextFormField(
             context: context,
@@ -132,19 +119,16 @@ class _LoginState extends State<LoginPage> {
     return Align(
       alignment: Alignment.center,
       child: TextButton(
-        onPressed: () async {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => RegisterPage(),
-            ),
-          );
-        },
+        onPressed: () => BlocProvider.of<AuthBlocCubit>(context).goToRegister(),
         child: RichText(
           text: TextSpan(
+            style: Theme.of(context).textTheme.bodyText2,
             text: 'Belum punya akun?',
             children: [
-              TextSpan(text: ' Daftar'),
+              TextSpan(
+                style: Theme.of(context).textTheme.bodyText2.copyWith(color: Theme.of(context).primaryColor),
+                text: ' Daftar',
+              ),
             ],
           ),
         ),
@@ -153,40 +137,7 @@ class _LoginState extends State<LoginPage> {
   }
 
   void _handleLogin() async {
-    final _email = _emailController.value;
-    final _password = _passwordController.value;
-
-    if (formKey.currentState?.validate() == true && _email != null && _password != null) {
-      final user = await DBLite.i.getUser(email: _email, password: _password);
-
-      if (user != null) {
-        _showSnackBar("Register berhasil");
-        AuthBlocCubit authBlocCubit = AuthBlocCubit();
-        authBlocCubit.loginUser(user);
-        await Future.delayed(Duration(seconds: 2));
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (context) => HomeBlocCubit()..fetchingData(),
-              child: HomeBlocScreen(),
-            ),
-          ),
-        );
-      }
-    }
-    _showSnackBar("Register gagal");
-  }
-
-  void _showSnackBar(String msg) {
-    scaffoldKey.currentState.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Text(
-          msg ?? "",
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
+    formKey.currentState?.validate();
+    BlocProvider.of<AuthBlocCubit>(context).loginUser(_emailController.value, _passwordController.value);
   }
 }

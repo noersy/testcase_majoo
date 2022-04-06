@@ -17,11 +17,16 @@ class HomeBlocCubit extends Cubit<HomeBlocState> {
       return;
     }
 
-    Trending trending = await apiServices.getMovieList();
+    Movie trending = await apiServices.getMovieTrending();
+    Movie upcoming = await apiServices.getMovieUpcoming();
+
     if (trending == null) {
       emit(HomeBlocErrorState("Error Unknown"));
     } else {
-      emit(HomeBlocLoadedState(trending));
+      emit(HomeBlocLoadedState([
+        trending,
+        upcoming,
+      ]));
     }
   }
 }

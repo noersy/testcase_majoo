@@ -7,7 +7,7 @@ Dio dioInstance;
 
 createInstance() async {
   var options = BaseOptions(
-    baseUrl: "https://api.themoviedb.org/3/trending/all/day",
+    baseUrl: "https://api.themoviedb.org/3/",
     connectTimeout: 12000,
     receiveTimeout: 12000,
     queryParameters: {"api_key": "0bc9e6490f0a9aa230bd01e268411e10"},
@@ -28,6 +28,6 @@ createInstance() async {
 
 Future<Dio> dio() async {
   await createInstance();
-  dioInstance.options.baseUrl = "https://api.themoviedb.org/3/trending/all/day";
+  dioInstance.options.baseUrl = "https://api.themoviedb.org/3/";
   return dioInstance;
 }
