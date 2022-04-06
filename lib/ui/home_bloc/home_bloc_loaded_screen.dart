@@ -1,18 +1,11 @@
-import 'dart:convert';
-
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:majootestcase/bloc/auth_bloc/auth_bloc_cubit.dart';
 import 'package:majootestcase/common/widget/app_bar.dart';
-import 'package:majootestcase/common/widget/custom_button.dart';
-import 'package:majootestcase/common/widget/image_network.dart';
 import 'package:majootestcase/models/trandings.dart';
-import 'package:majootestcase/models/user.dart';
-import 'package:majootestcase/themes/spacing.dart';
-import 'package:majootestcase/ui/detail_movie/detail_page.dart';
+import 'package:majootestcase/ui/extra/movie_list.dart';
+import 'package:majootestcase/ui/extra/side_menu.dart';
+import 'package:majootestcase/ui/extra/trending_carousel.dart';
+import 'package:majootestcase/ui/extra/upcoming_list.dart';
 import 'package:majootestcase/utils/constant.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeBlocLoadedScreen extends StatefulWidget {
   final List<Movie> data;
@@ -39,7 +32,7 @@ class _HomeBlocLoadedScreenState extends State<HomeBlocLoadedScreen> {
           _scaffoldKey.currentState.openDrawer();
         },
       ),
-      drawer: SideDrawer(),
+      drawer: SideMenu(),
       body: PageView(
         physics: NeverScrollableScrollPhysics(),
         controller: controller,
@@ -48,7 +41,7 @@ class _HomeBlocLoadedScreenState extends State<HomeBlocLoadedScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 18.0),
+                const SizedBox(height: SpDims.sp18),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 22.0),
                   child: Text(
@@ -56,8 +49,8 @@ class _HomeBlocLoadedScreenState extends State<HomeBlocLoadedScreen> {
                     style: Theme.of(context).textTheme.title,
                   ),
                 ),
-                const SizedBox(height: 18.0),
-                _TrendingCarousel(data: widget.data[0].results),
+                const SizedBox(height: SpDims.sp18),
+                TrendingCarousel(data: widget.data[0].results),
                 SizedBox(height: SpDims.sp20),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 22.0),
@@ -68,7 +61,7 @@ class _HomeBlocLoadedScreenState extends State<HomeBlocLoadedScreen> {
                 ),
                 LimitedBox(
                   maxHeight: 300,
-                  child: _UpcomingList(data: widget.data[1].results),
+                  child: UpcomingList(data: widget.data[1].results),
                 ),
               ],
             ),
@@ -77,9 +70,9 @@ class _HomeBlocLoadedScreenState extends State<HomeBlocLoadedScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 18.0),
+                const SizedBox(height: SpDims.sp18),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 22.0),
+                  padding: const EdgeInsets.symmetric(vertical: SpDims.sp4, horizontal: SpDims.sp4),
                   child: Text(
                     "List Movie",
                     style: Theme.of(context).textTheme.title,
@@ -87,15 +80,12 @@ class _HomeBlocLoadedScreenState extends State<HomeBlocLoadedScreen> {
                 ),
                 LimitedBox(
                   maxHeight: 1000,
-                  child: _MovieList(data: widget.data[1].results),
+                  child: MovieList(data: widget.data[1].results),
                 ),
               ],
             ),
           ),
         ],
-        onPageChanged: (value) {
-          index = value;
-        },
       ),
       bottomNavigationBar: StatefulBuilder(
         builder: (context, setState) {
@@ -113,251 +103,6 @@ class _HomeBlocLoadedScreenState extends State<HomeBlocLoadedScreen> {
             },
           );
         },
-      ),
-    );
-  }
-}
-
-class SideDrawer extends StatefulWidget {
-  const SideDrawer({Key key}) : super(key: key);
-
-  @override
-  _SideDrawerState createState() => _SideDrawerState();
-}
-
-class _SideDrawerState extends State<SideDrawer> {
-  SharedPreferences sharedPreferences;
-  User _user;
-
-  getPref() async {
-    sharedPreferences = await SharedPreferences.getInstance();
-    _user = User.fromJson(jsonDecode(sharedPreferences.getString('user_value')));
-    print(_user.toJson());
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    getPref();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Drawer(
-        semanticLabel: "Menu",
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  SizedBox(height: SpDims.sp20),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      radius: 60,
-                      child: Icon(Icons.person,size: 70),
-                    ),
-                  ),
-                  Text(_user?.userName ?? 'none', style: Theme.of(context).textTheme.title),
-                  Text(_user?.email ?? 'none', style: Theme.of(context).textTheme.subtitle1),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CostumButton(
-                text: 'Logout',
-                onPressed: () {
-                  BlocProvider.of<AuthBlocCubit>(context).logout();
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _MovieList extends StatelessWidget {
-  final List<Result> data;
-
-  const _MovieList({Key key, this.data}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: 2 / 4),
-      itemCount: data.length,
-      itemBuilder: (_, index) {
-        return GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => DetailMoviePage(
-                data: data[index],
-                title: data[index].title ?? data[index].name ?? data[index].originalTitle ?? data[index].originalName,
-              ),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 200,
-                  width: double.infinity,
-                  child: Card(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(7.0),
-                      child: CImage.network(Api.imagePath + data[index].posterPath, fit: BoxFit.cover),
-                    ),
-                  ),
-                ),
-                Card(
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
-                    child: Text(
-                      data[index]?.title ?? data[index]?.name ?? data[index].originalTitle ?? data[index]?.originalName,
-                      style: Theme.of(context).textTheme.caption.copyWith(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _UpcomingList extends StatelessWidget {
-  final List<Result> data;
-
-  const _UpcomingList({Key key, this.data}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: data.length,
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (_, index) {
-        return GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => DetailMoviePage(
-                data: data[index],
-                title: data[index].title ?? data[index].name ?? data[index].originalTitle ?? data[index].originalName,
-              ),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 200,
-                  width: 120.0,
-                  child: Card(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(7.0),
-                      child: CImage.network(Api.imagePath + data[index].posterPath, fit: BoxFit.cover),
-                    ),
-                  ),
-                ),
-                Card(
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
-                    child: Text(
-                      data[index]?.title ?? data[index]?.name ?? data[index].originalTitle ?? data[index]?.originalName,
-                      style: Theme.of(context).textTheme.caption.copyWith(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _TrendingCarousel extends StatelessWidget {
-  final List<Result> data;
-
-  const _TrendingCarousel({Key key, @required this.data}) : super(key: key);
-
-  static const _imagePath = "https://image.tmdb.org/t/p/w500";
-
-  @override
-  Widget build(BuildContext context) {
-    return CarouselSlider.builder(
-      itemCount: data.length,
-      itemBuilder: (BuildContext context, int index, int realIndex) {
-        return GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => DetailMoviePage(
-                data: data[index],
-                title: data[index].title ?? data[index].name ?? data[index].originalTitle ?? data[index].originalName,
-              ),
-            ),
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(7.0),
-                    child: CImage.network(_imagePath + data[index].posterPath),
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
-                  width: double.infinity,
-                  child: Text(
-                    data[index].title ?? data[index].name ?? data[index].originalTitle ?? data[index].originalName,
-                    style: Theme.of(context).textTheme.caption.copyWith(fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              )
-            ],
-          ),
-        );
-      },
-      options: CarouselOptions(
-        height: 340,
-        viewportFraction: 0.5,
-        initialPage: 0,
-        enableInfiniteScroll: true,
-        reverse: false,
-        autoPlay: true,
-        autoPlayInterval: const Duration(seconds: 3),
-        autoPlayAnimationDuration: const Duration(milliseconds: 800),
-        autoPlayCurve: Curves.fastOutSlowIn,
-        enlargeCenterPage: true,
-        scrollDirection: Axis.horizontal,
       ),
     );
   }

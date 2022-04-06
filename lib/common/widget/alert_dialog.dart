@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:majootestcase/common/widget/custom_button.dart';
 import 'package:majootestcase/main.dart';
-import 'package:majootestcase/themes/spacing.dart';
+import 'package:majootestcase/utils/constant.dart';
 
 class CostumeAlertDialog extends StatelessWidget {
   final String title, content;
