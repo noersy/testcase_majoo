@@ -30,22 +30,30 @@ class AuthBlocCubit extends Cubit<AuthBlocState> {
     }
   }
 
+  ///Ganti state auth ke register
+  ///@author nur syahfei
   void goToRegister() {
     emit(AuthBlocRegisterState());
   }
 
+  ///ganti state auth ke login
+  ///@author nur syahfei
   void goToLogin() {
     emit(AuthBlocLoginState());
   }
 
+  ///Digunakan untuk melakukan register akun baru
+  ///@author nur syahfei
+  ///@param Srting _email:  email user
+  ///@param Srting  _password:  password user
+  ///@param Srting  _username:  username  user
   void register(String _email, String _password, String _username, {bool valid}) async {
-
     if (_email == null || _password == null) {
       await _showAlert(title: "Login Gagal", content: "Form tidak boleh kosong, mohon cek kembali data yang anda inputkan", isError: true);
       return;
     }
 
-    if(!valid){
+    if (!valid) {
       await _showAlert(title: "Login Gagal", content: "Masukkan e-mail yang valid", isError: true);
       return;
     }
@@ -68,6 +76,11 @@ class AuthBlocCubit extends Cubit<AuthBlocState> {
     }
   }
 
+  ///Digunakan login ke aplikasi
+  ///@author nur syahfei
+  ///@param Srting _email:  email user
+  ///@param Srting  _password:  password user
+  ///@param Srting  _username:  username  user
   void loginUser(String _email, String _password) async {
     if (_email == null || _password == null) {
       await _showAlert(title: "Login Gagal", content: "Form tidak boleh kosong, mohon cek kembali data yang anda inputkan", isError: true);
@@ -91,6 +104,9 @@ class AuthBlocCubit extends Cubit<AuthBlocState> {
     }
   }
 
+
+  ///Digunakan logout ke aplikasi, dan menghapus setting di sharedPreferences
+  ///@author nur syahfei
   void logout() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
@@ -100,6 +116,12 @@ class AuthBlocCubit extends Cubit<AuthBlocState> {
     emit(AuthBlocLoginState());
   }
 
+
+  ///Digunakan menampilkan dialog alaert gagal atau berhasil
+  ///@author nur syahfei
+  ///@param String title: judul alert
+  ///@param String content: isi alart
+  ///@param bool isError: menemtukan apakah ini dialog error atau berhasil
   Future<void> _showAlert({String title, String content, bool isError}) async {
     return await showDialog(
       context: navigatorKey.currentContext,
